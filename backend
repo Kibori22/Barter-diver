@@ -1,0 +1,19 @@
+// Add this inside your io.on('connection') block in node.js
+
+socket.on('crowd-hype', (data) => {
+    // data: { roomId, targetRapperId, hypeType: 'fire' | 'clap' }
+    
+    let multiplier = data.hypeType === 'fire' ? 1.2 : 1.1;
+    
+    // Broadcast the hype animation to everyone in the room
+    io.to(data.roomId).emit('hype-animation', {
+        type: data.hypeType,
+        sender: socket.id
+    });
+
+    // Update the rapper's score with the crowd bonus
+    io.to(data.targetRapperId).emit('receive-bonus', {
+        multiplier: multiplier,
+        message: "Crowd is feeling it!"
+    });
+});

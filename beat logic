@@ -1,0 +1,28 @@
+// tone.js - Dynamic Beat Engine
+import * as Tone from 'tone';
+
+const coreBeat = new Tone.Player("/sounds/kick-snare.mp3").toDestination();
+const hypeLayer = new Tone.Player("/sounds/fast-hihats.mp3").toDestination();
+
+// Start with the hype layer silent
+hypeLayer.volume.value = -Infinity; 
+
+export const updateBeatIntensity = (multiplier) => {
+  // If hype is above 1.5x, bring in the extra hi-hats
+  if (multiplier > 1.5) {
+    hypeLayer.volume.rampTo(0, 1); // Fade in over 1 second
+  } else {
+    hypeLayer.volume.rampTo(-Infinity, 1); // Fade out
+  }
+};
+
+export const startBattleMusic = () => {
+  Tone.Loaded().then(() => {
+    coreBeat.loop = true;
+    hypeLayer.loop = true;
+    coreBeat.start();
+    hypeLayer.start();
+    Tone.Transport.bpm.value = 95;
+    Tone.Transport.start();
+  });
+};

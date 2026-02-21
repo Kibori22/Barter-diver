@@ -1,0 +1,9 @@
+// Add this to your Node.js socket logic
+socket.on('premium-interact', (data) => {
+    // Only allow if user is verified premium
+    if (user.isPremium) {
+        io.to(data.roomId).emit('play-sfx', { sfx: 'airhorn' });
+        // Give the rapper a temporary "Metaphor Bonus"
+        applyBonus(data.rapperId, 1.25); 
+    }
+});

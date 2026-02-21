@@ -1,0 +1,22 @@
+// server.js logic for Hype
+let roomStats = {}; // To track live hype per room
+
+socket.on('send-hype', (data) => {
+    const { roomId, rapperId, isPremium } = data;
+    
+    if (!roomStats[roomId]) roomStats[roomId] = {};
+    if (!roomStats[roomId][rapperId]) roomStats[roomId][rapperId] = 1.0;
+
+    // Premium subscribers give a bigger hype boost
+    const boostAmount = isPremium ? 0.05 : 0.02; 
+    roomStats[roomId][rapperId] += boostAmount;
+
+    // Cap the multiplier at 2.0x
+    if (roomStats[roomId][rapperId] > 2.0) roomStats[roomId][rapperId] = 2.0;
+
+    // Tell everyone in the room to update their UI meters
+    io.to(roomId).emit('hype-updated', {
+        rapperId: rapperId,
+        newMultiplier: roomStats[roomId][rapperId]
+    });
+});
